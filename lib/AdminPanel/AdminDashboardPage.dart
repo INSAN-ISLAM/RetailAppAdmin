@@ -230,11 +230,12 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                 });
 
                //  print(totalAdvanceAmount);
-                // print(totalAdvanceAmount);
+                print(totalDepositAmount);
+                 print(totalAdvanceAmount);
                 //
-                 //print(totalDepositAmount);
-                //num totalUserTaka=totalDepositAmount-totalAdvanceAmount;
-               // print(totalUserTaka);
+
+                num totalUserTaka=totalDepositAmount-totalAdvanceAmount;
+               print(totalUserTaka);
                 snapshot.data![1].docs.forEach((doc) {
                   double transferDiamond =
                       double.tryParse(doc['TransferDiamond'] ?? '0') ?? 0;

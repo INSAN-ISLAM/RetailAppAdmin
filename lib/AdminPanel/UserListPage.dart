@@ -18,8 +18,8 @@ class _UserListScreenState extends State<SignUpListScreen> {
 
 
   final user = FirebaseAuth.instance.currentUser;
-
-  void _showDeleteConfirmationDialog(String id, String uid) {
+//userId
+  void _showDeleteConfirmationDialog(String id,String uid ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -37,7 +37,10 @@ class _UserListScreenState extends State<SignUpListScreen> {
               child: Text('Delete'),
               onPressed: () {
                 Navigator.of(context).pop();
-                _deleteItem(id, uid);
+
+               _deleteItem(id, uid);
+
+
               },
             ),
           ],
@@ -45,6 +48,71 @@ class _UserListScreenState extends State<SignUpListScreen> {
       },
     );
   }
+
+
+
+
+
+
+
+  Future<void> deleteUserDataFromAllCollections(String userId) async {
+    try {
+
+      await FirebaseFirestore.instance.collection('profiles').doc(userId).delete();
+
+
+      QuerySnapshot ordersSnapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      for (var doc in ordersSnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+
+      QuerySnapshot messagesSnapshot = await FirebaseFirestore.instance
+          .collection('messages')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      for (var doc in messagesSnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      print('All user data deleted from Firestore collections.');
+    } catch (e) {
+      print('Failed to delete user data from collections: $e');
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   void _deleteItem(String id, uid) {
     _itemsCollection.doc(id).delete().then((_) async {
@@ -59,10 +127,12 @@ class _UserListScreenState extends State<SignUpListScreen> {
   }
 
   _deleteUser(uid) async {
-    String url = 'https://pulsefinance.us/public/api/firebase_delete_user/${uid.toString()}';
+    print('uid'+uid);
+    String url = 'https://google.smartbiniyog.com/delete_user/${uid.toString()}/';
 
-    http.Response response = await http.delete(Uri.parse(url));
+    http.Response response = await http.get(Uri.parse(url));
     print(response);
+    print('code'+response.statusCode.toString());
     if (response.statusCode == 200) {
 
       print("User delete successfully");
@@ -137,7 +207,7 @@ class _UserListScreenState extends State<SignUpListScreen> {
              //totalDepositAmounts += depositAmount;
             });
 
-            print(sum);
+            //print(sum);
             //print(totalDepositAmounts);
             var totalAdvanceAmount=0;
             final _advance = <String, int>{};
@@ -168,7 +238,7 @@ class _UserListScreenState extends State<SignUpListScreen> {
                 itemBuilder: (context, index) {
                   var user = users[index];
                   var userData = user.data() as Map<String, dynamic>;
-                  print(userData);
+                 // print(userData);
                   var totalDiposit  = sum[userData['uid']] ?? 0 ;
                   var totalAdvance = _advance[userData['uid']] ?? 0 ;
                   var total_result = totalDiposit-totalAdvance;
@@ -222,9 +292,10 @@ class _UserListScreenState extends State<SignUpListScreen> {
                             child: IconButton(
                                 onPressed: () {
 
-
+                                  //deleteUserWithAllData();
                                   _showDeleteConfirmationDialog(
-                                      user.id, userData['uid']);
+                                      user.id, userData['uid']
+                                  );
                                 },
                                 icon: Icon(Icons.pending)),
                           )),
