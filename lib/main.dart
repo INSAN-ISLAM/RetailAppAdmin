@@ -7,13 +7,44 @@ import 'AdminPanel/AdminNavigationBarPage.dart';
 import 'AdminPanel/LogInPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'core/notification_service.dart';
 import 'fcm_notification.dart';
 import 'firebase_options.dart';
 
 
+initializeNotification () async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  print('User granted permission: ${settings.authorizationStatus}');
+}
+
+handleForegroundMessage () {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+      NotificationServices().showNotification(
+        title: message.notification!.title,
+        body: message.notification!.body,
+      );
+    }
+  });
+}
+
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
@@ -21,12 +52,23 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 }
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
- await FCMUtils().initialize();
+
+  NotificationServices().initNotification();
+
+
+  initializeNotification();
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+
+  handleForegroundMessage();
+
   runApp(MyApp());
 }
 

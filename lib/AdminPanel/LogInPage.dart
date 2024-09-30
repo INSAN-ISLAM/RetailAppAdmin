@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:retailadminpanel/Widget/AppEevatedButton.dart';
@@ -31,6 +33,10 @@ class _LogInScreenState extends State<LogInScreen> {
         email: _emailETController.text,
         password: _passwordETController.text,
       );
+
+      await FirebaseFirestore.instance.collection('admins').doc('milonc70@gmail.com').update({
+        'token' : await FirebaseMessaging.instance.getToken(),
+      });
 
       if (result.user!.uid == adminUID) {
         Navigator.pushReplacement(
