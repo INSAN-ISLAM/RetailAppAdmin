@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:retailadminpanel/core/firebase_api.dart';
 
 class RechargeAcceptScreen extends StatefulWidget {
   const RechargeAcceptScreen({Key? key}) : super(key: key);
@@ -39,6 +40,16 @@ class _RechargeAcceptScreenState extends State<RechargeAcceptScreen> {
           .collection('ReceiptDetails')
           .doc(documentId)
           .update({'Status': newStatus});
+
+      final document = await _firestore.collection('ReceiptDetails').doc(documentId).get();
+
+
+      final user = await _firestore.collection('Check').doc(document['user']).get();
+
+      final userToken = user['token'];
+
+      await FirebaseApi.sendMessage('Recharge Request Accepted', 'Your recharge request of ${document['TransferDiamond']} diamond has been approved', userToken);
+
     } catch (e) {
       throw Exception('Error updating status: $e');
     }
@@ -68,11 +79,6 @@ class _RechargeAcceptScreenState extends State<RechargeAcceptScreen> {
     final diamond = document['TransferDiamond'].toString().toLowerCase();
     return receiptNumber.contains(_searchQuery) || diamond.contains(_searchQuery);
   }
-
-
-  
-
-
 
 
   @override
