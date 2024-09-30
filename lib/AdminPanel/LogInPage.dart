@@ -20,7 +20,7 @@ class _LogInScreenState extends State<LogInScreen> {
   bool _isLoading = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  static const adminUID = "O2GV6e7kUUN4ZhRTgs4JwvUipg43";
+  static const adminUID = "BlUktzurVDOqeekeWf4eaq13Kut1";
 
   Future<void> _login() async {
     setState(() {

@@ -45,6 +45,7 @@ class RegisterScreen extends StatelessWidget {
           'diamond': 0,
           'type': 'user',
           'password': int.tryParse(passwordETController.text) ?? 0,
+           'personInf':' '
         });
        return value;
 

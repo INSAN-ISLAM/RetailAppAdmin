@@ -127,7 +127,7 @@ class _RechargeAcceptScreenState extends State<DepositAcceptScreen> {
                           var formattedDate = DateFormat.yMMMd().format(date);
 
                           return ListTile(
-                            title: SelectableText("Trangection ID: ${document['TrxID']}"),
+                            title: SelectableText("Trangection ID: ${document['TrxID']} Name:${document['name']}"),
                             subtitle: SelectableText("Amount: ${document['Amount']}"),
                             leading:Image.network("${document['user_photo']}"),
                             trailing: DropdownButton<String>(

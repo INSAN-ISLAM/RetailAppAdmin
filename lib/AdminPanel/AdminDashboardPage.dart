@@ -228,14 +228,14 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                     todayAdvanceAmount += advanceAmount;
                   }
                 });
-
+              //  print(todayAdvanceAmount);
                //  print(totalAdvanceAmount);
-                print(totalDepositAmount);
-                 print(totalAdvanceAmount);
+               // print(totalDepositAmount);
+               //  print(totalAdvanceAmount);
                 //
 
                 num totalUserTaka=totalDepositAmount-totalAdvanceAmount;
-               print(totalUserTaka);
+              // print(totalUserTaka);
                 snapshot.data![1].docs.forEach((doc) {
                   double transferDiamond =
                       double.tryParse(doc['TransferDiamond'] ?? '0') ?? 0;
@@ -599,7 +599,7 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                                               left: 16.0,
                                             ),
                                             child: Text(
-                                              "$totalDepositAmount",
+                                              "$totalUserTaka",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.white),

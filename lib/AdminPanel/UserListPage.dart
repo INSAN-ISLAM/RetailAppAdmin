@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'UserDetailsPage.dart';
 
 class SignUpListScreen extends StatefulWidget {
-  const SignUpListScreen({Key? key}) : super(key: key);
+  SignUpListScreen({Key? key}) : super();
 
   @override
   State<SignUpListScreen> createState() => _UserListScreenState();
@@ -16,10 +16,9 @@ class SignUpListScreen extends StatefulWidget {
 class _UserListScreenState extends State<SignUpListScreen> {
   final CollectionReference _itemsCollection = FirebaseFirestore.instance.collection('Check');
 
-
   final user = FirebaseAuth.instance.currentUser;
-//userId
-  void _showDeleteConfirmationDialog(String id,String uid ) {
+
+  void _showDeleteConfirmationDialog(String id, String uid) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -37,10 +36,7 @@ class _UserListScreenState extends State<SignUpListScreen> {
               child: Text('Delete'),
               onPressed: () {
                 Navigator.of(context).pop();
-
-               _deleteItem(id, uid);
-
-
+                _deleteItem(id, uid);
               },
             ),
           ],
@@ -49,17 +45,9 @@ class _UserListScreenState extends State<SignUpListScreen> {
     );
   }
 
-
-
-
-
-
-
   Future<void> deleteUserDataFromAllCollections(String userId) async {
     try {
-
       await FirebaseFirestore.instance.collection('profiles').doc(userId).delete();
-
 
       QuerySnapshot ordersSnapshot = await FirebaseFirestore.instance
           .collection('orders')
@@ -69,7 +57,6 @@ class _UserListScreenState extends State<SignUpListScreen> {
       for (var doc in ordersSnapshot.docs) {
         await doc.reference.delete();
       }
-
 
       QuerySnapshot messagesSnapshot = await FirebaseFirestore.instance
           .collection('messages')
@@ -86,37 +73,28 @@ class _UserListScreenState extends State<SignUpListScreen> {
     }
   }
 
+  Future<void> deleteFirebaseUser(String userId) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  void _deleteItem(String id, uid) {
+      if (user != null) {
+        await user.delete();
+        print('User account deleted successfully.');
+      } else {
+        print('No user is signed in.');
+      }
+    } catch (e) {
+      print('Error deleting user: $e');
+    }
+  }
+  void _deleteItem(String id, String uid) {
     _itemsCollection.doc(id).delete().then((_) async {
+      // Delete associated documents from DepositDetails and ReceiptDetails collections
+      await _deleteDocumentsWithUID(uid);
+
       await _deleteUser(uid);
+
+    //await deleteFirebaseUser(uid);
 
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Item deleted')));
@@ -126,28 +104,48 @@ class _UserListScreenState extends State<SignUpListScreen> {
     });
   }
 
+  Future<void> _deleteDocumentsWithUID(String uid) async {
+    // Delete documents from DepositDetails with matching uid
+    QuerySnapshot depositDetailsSnapshot = await FirebaseFirestore.instance
+        .collection('DepositDetails')
+        .where('user', isEqualTo: uid)
+        .get();
+
+    for (var doc in depositDetailsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete documents from ReceiptDetails with matching uid
+    QuerySnapshot receiptDetailsSnapshot = await FirebaseFirestore.instance
+        .collection('ReceiptDetails')
+        .where('user', isEqualTo: uid)
+        .get();
+
+    for (var doc in receiptDetailsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    print('Documents from DepositDetails and ReceiptDetails deleted for uid: $uid');
+  }
+
   _deleteUser(uid) async {
-    print('uid'+uid);
-    String url = 'https://google.smartbiniyog.com/delete_user/${uid.toString()}/';
 
-    http.Response response = await http.get(Uri.parse(url));
+
+    String url = 'https://google.smartbiniyog.com/api/delete_user/${uid.toString()}';
+
+    http.Response response = await http.delete(Uri.parse(url));
     print(response);
-    print('code'+response.statusCode.toString());
+    print('code' + response.statusCode.toString());
     if (response.statusCode == 200) {
-
       print("User delete successfully");
     } else {
       print("Something went wrong");
     }
   }
 
-  //num totalDepositAmount = 0;
-
   final _advance = <String, int>{};
+  num totalUserAmount = 0;
 
-  num totalUserAmount=0;
-
-  //print($total);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,155 +161,117 @@ class _UserListScreenState extends State<SignUpListScreen> {
           ),
         ),
       ),
-      body: FutureBuilder(
-          future: Future.wait([
-            FirebaseFirestore.instance.collection('Check').get(),
-            FirebaseFirestore.instance.collection('DepositDetails').where('Status', isEqualTo: 'paid').get(),
-          FirebaseFirestore.instance.collection('ReceiptDetails').where('Status', isEqualTo: 'Approve').get(),
-          ]),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('Check').snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
 
+          List<DocumentSnapshot> users = snapshot.data!.docs;
 
-          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
+          return StreamBuilder(
+            stream: Stream.fromFuture(Future.wait([
+              FirebaseFirestore.instance
+                  .collection('DepositDetails')
+                  .where('Status', isEqualTo: 'paid')
+                  .get(),
+              FirebaseFirestore.instance
+                  .collection('ReceiptDetails')
+                  .where('Status', isEqualTo: 'Approve')
+                  .get(),
+            ])),
+            builder: (context, AsyncSnapshot<List<QuerySnapshot>> collectionSnapshot) {
+              if (!collectionSnapshot.hasData) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-            // Collection 1 Data
-            List<DocumentSnapshot> users = snapshot.data![0].docs;
-            // snapshot.data![0].docs.forEach((doc) {
-            //   var userId = doc['uid']  ?? 0;
-            //   print(userId);
-            //   var totalAdvance = _advance[doc['uid']] ?? 0 ;
-            //   var totalDiposit  = sum[doc['uid']] ?? 0 ;
-            //   print(totalDiposit);
-            //   //userData['uid']] ?? 0 ;
-            //
-            //   //totalDepositAmounts += depositAmount;
-            // });
+              var totalDepositAmounts = 0;
+              final sum = <String, int>{};
+              collectionSnapshot.data![0].docs.forEach((doc) {
+                var depositAmount = (doc['Amount'] as int?) ?? 0;
+                var userId = doc['user'] ?? '0';
 
+                sum[userId] = (sum[userId] ?? 0) + depositAmount;
+              });
 
+              var totalAdvanceAmount = 0;
+              final _advance = <String, int>{};
+              collectionSnapshot.data![1].docs.forEach((doc) {
+                var advanceAmount = (doc['amount'] as int?) ?? 0;
+                var uid = doc['user'] ?? '0';
+                _advance[uid] = (_advance[uid] ?? 0) + advanceAmount;
+              });
 
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.separated(
+                  itemCount: users.length,
+                  itemBuilder: (context, index) {
+                    var user = users[index];
+                    var userData = user.data() as Map<String, dynamic>;
+                    var totalDeposit = sum[userData['uid']] ?? 0;
+                    var totalAdvance = _advance[userData['uid']] ?? 0;
+                    var totalResult = totalDeposit - totalAdvance;
 
+                    totalUserAmount = totalUserAmount + totalResult;
 
-            // Collection 2 Data
-            //  List<DocumentSnapshot> collection2Data = snapshot.data![1].docs;
-           // final sum = <String, int>{};
-            //
-             var totalDepositAmounts=0;
-            final sum = <String, int>{};
-            snapshot.data![1].docs.forEach((doc) {
-              var depositAmount = (doc['Amount'] as int?) ?? 0;
-              var user_id = doc['user'] ?? '0' ?? 0;
-
-              sum[user_id] = (sum[user_id] ?? 0) + depositAmount;
-             //totalDepositAmounts += depositAmount;
-            });
-
-            //print(sum);
-            //print(totalDepositAmounts);
-            var totalAdvanceAmount=0;
-            final _advance = <String, int>{};
-            snapshot.data![2].docs.forEach((doc) {
-              var advanceAmount = (doc['amount'] as int?) ?? 0;
-              var uid = doc['user'] ?? '0' ?? 0;
-              _advance[uid] = (_advance[uid] ?? 0) + advanceAmount;
-             // totalAdvanceAmount += advanceAmount;
-            });
-           //print(_advance);
-         //   print(totalAdvanceAmount);
-
-   //var totalUserTaka=totalDepositAmounts-totalAdvanceAmount;
-           // print(totalUserTaka);
-          //  num totalUserResult=0;
-            // print(totalUserResult);
-            //print(users.length);
-
-
-
-
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.separated(
-                itemCount: users.length,
-               // addAutomaticKeepAlives: true,
-                scrollDirection: Axis.vertical,
-                itemBuilder: (context, index) {
-                  var user = users[index];
-                  var userData = user.data() as Map<String, dynamic>;
-                 // print(userData);
-                  var totalDiposit  = sum[userData['uid']] ?? 0 ;
-                  var totalAdvance = _advance[userData['uid']] ?? 0 ;
-                  var total_result = totalDiposit-totalAdvance;
-
-                  totalUserAmount = totalUserAmount+total_result;
-
-
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 90,
-                        child: InkWell(
-                            onTap: () {
-                              if (userData['user_photo'].isNotEmpty) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => UserDetailScreen(
-                                              nid_backPart:
-                                                  userData['nid_back'],
-                                              // userData['nid_back'],
-                                              nid_frontPart:
-                                                  userData['nid_front'],
-                                              // userData['nid_front'],
-                                              num: userData['whats_app'],
-                                              //userData['whats_app'],
-                                              address: userData[
-                                                  'address'], //userData['address'],
-                                            )));
-                              }
-                            },
-                            child: ListTile(
-                              title: Text('Name : ${userData['name'] ?? 'No Name'}'),
-                              subtitle: Text("Total= $total_result Tk & Rate=${userData['rate'] ?? 'No Name'}%  "),  //${sum[userData['uid']] ?? 0 }
-                              leading: Container(
-                                height: 100,
-                                width: 100,
-                                child: Image.network(userData['user_photo'] ?? 'No Image',),
-
-                              ),
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 90,
+                          child: InkWell(
+                              onTap: () {
+                                if (userData['user_photo'].isNotEmpty) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => UserDetailScreen(
+                                            nid_backPart: userData['nid_back'],
+                                            nid_frontPart: userData['nid_front'],
+                                            num: userData['whats_app'],
+                                            address: userData['address'],
+                                          )));
+                                }
+                              },
+                              child: ListTile(
+                                title: Text('Name : ${userData['name'] ?? 'No Name'}'),
+                                subtitle: Text("Total= $totalResult Tk & Rate=${userData['rate'] ?? 'No Rate'}%"),
+                                leading: Container(
+                                  height: 80,
+                                  width: 80,
+                                  child: userData['user_photo'] ==null? Icon(Icons.person,size: 40,): Image.network(userData['user_photo']),
+                                ),
+                              )),
+                        ),
+                        Expanded(
+                            flex: 10,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: IconButton(
+                                  onPressed: () {
+                                    _showDeleteConfirmationDialog(user.id, userData['uid']);
+                                  },
+                                  icon: Icon(Icons.pending)),
                             )),
-                      ),
-
-
-                      Expanded(
-                          flex: 10,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: IconButton(
-                                onPressed: () {
-
-                                  //deleteUserWithAllData();
-                                  _showDeleteConfirmationDialog(
-                                      user.id, userData['uid']
-                                  );
-                                },
-                                icon: Icon(Icons.pending)),
-                          )),
-                    ],
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return Divider(
-                    thickness: 2,
-                    height: 30,
-                    color: Colors.deepOrange,
-                  );
-                },
-              ),
-            );
-          }),
+                      ],
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider(
+                      thickness: 2,
+                      height: 30,
+                      color: Colors.deepOrange,
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

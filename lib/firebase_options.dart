@@ -47,33 +47,31 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAe4x4hG3F3aZNyJcY-xx8lvIfUyzvsqn8',
-    appId: '1:747092674378:web:dff0d413f0888423b5e3b3',
-    messagingSenderId: '747092674378',
-    projectId: 'retailapp-8ea0c',
-    authDomain: 'retailapp-8ea0c.firebaseapp.com',
-    databaseURL: 'https://retailapp-8ea0c-default-rtdb.firebaseio.com',
-    storageBucket: 'retailapp-8ea0c.appspot.com',
-    measurementId: 'G-Z2JLQSYB0Q',
+    apiKey: 'AIzaSyCoW2ppRGDLal7_hUl_sqiF1p9en7GleiI',
+    appId: '1:363953019706:web:bef9845fef4aad91d5ce03',
+    messagingSenderId: '363953019706',
+    projectId: 'retailappstore',
+    authDomain: 'retailappstore.firebaseapp.com',
+    storageBucket: 'retailappstore.appspot.com',
+    measurementId: 'G-BNRGYYCLY4',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDSsJwzfa-JGC9QBZiaEoty5rgo7bETQ9o',
-    appId: '1:747092674378:android:5bc56c9a642502d7b5e3b3',
-    messagingSenderId: '747092674378',
-    projectId: 'retailapp-8ea0c',
-    databaseURL: 'https://retailapp-8ea0c-default-rtdb.firebaseio.com',
-    storageBucket: 'retailapp-8ea0c.appspot.com',
+    apiKey: 'AIzaSyBNErI78XK70QhbZnp9HR5ET6IXnDZiO6Q',
+    appId: '1:363953019706:android:9cc50a58162d69ddd5ce03',
+    messagingSenderId: '363953019706',
+    projectId: 'retailappstore',
+    storageBucket: 'retailappstore.appspot.com',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAe4x4hG3F3aZNyJcY-xx8lvIfUyzvsqn8',
-    appId: '1:747092674378:web:aee1e25c8b073970b5e3b3',
-    messagingSenderId: '747092674378',
-    projectId: 'retailapp-8ea0c',
-    authDomain: 'retailapp-8ea0c.firebaseapp.com',
-    databaseURL: 'https://retailapp-8ea0c-default-rtdb.firebaseio.com',
-    storageBucket: 'retailapp-8ea0c.appspot.com',
-    measurementId: 'G-B4J6Z0HF7T',
+    apiKey: 'AIzaSyCoW2ppRGDLal7_hUl_sqiF1p9en7GleiI',
+    appId: '1:363953019706:web:ed896b02d9223958d5ce03',
+    messagingSenderId: '363953019706',
+    projectId: 'retailappstore',
+    authDomain: 'retailappstore.firebaseapp.com',
+    storageBucket: 'retailappstore.appspot.com',
+    measurementId: 'G-FJQQ82927H',
   );
+
 }
