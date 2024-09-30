@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:retailadminpanel/AdminPanel/screen_short.dart';
 
+import '../core/firebase_api.dart';
+
 class DepositAcceptScreen extends StatefulWidget {
   const DepositAcceptScreen({Key? key}) : super(key: key);
 
@@ -40,6 +42,17 @@ class _RechargeAcceptScreenState extends State<DepositAcceptScreen> {
           .collection('DepositDetails')
           .doc(documentId)
           .update({'Status': newStatus});
+
+
+      final document = await _firestore.collection('ReceiptDetails').doc(documentId).get();
+
+
+      final user = await _firestore.collection('Check').doc(document['user']).get();
+
+      final userToken = user['token'];
+
+      await FirebaseApi.sendMessage('Deposit Request Accepted', 'Your deposit request of ${document['User Diamond']} diamond has been approved', userToken);
+
     } catch (e) {
       throw Exception('Error updating status: $e');
     }
