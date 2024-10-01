@@ -44,16 +44,22 @@ class _RechargeAcceptScreenState extends State<DepositAcceptScreen> {
           .update({'Status': newStatus});
 
 
-      final document = await _firestore.collection('ReceiptDetails').doc(documentId).get();
+      if (newStatus == 'paid') {
+
+        final document = await _firestore.collection('DepositDetails').doc(documentId).get();
 
 
-      final user = await _firestore.collection('Check').doc(document['user']).get();
+        final user = await _firestore.collection('Check').doc(document['user']).get();
 
-      final userToken = user['token'];
+        final userToken = user['token'];
 
-      await FirebaseApi.sendMessage('Deposit Request Accepted', 'Your deposit request of ${document['User Diamond']} diamond has been approved', userToken);
+        print('User token $user');
 
+        FirebaseApi.sendMessage('Deposit Request Accepted', 'Your deposit request of ${document['User Diamond']} diamond has been approved', userToken);
+
+      }
     } catch (e) {
+
       throw Exception('Error updating status: $e');
     }
   }
@@ -108,9 +114,6 @@ class _RechargeAcceptScreenState extends State<DepositAcceptScreen> {
                   onChanged: _searchDocuments,
                 ),
               ),
-              TextButton(onPressed: () {
-                FirebaseApi.sendMessage('Deposit Request Accepted', 'Your deposit request of User Diamond diamond has been approved', 'fbvnTklVQ3SI7JLG43R-IU:APA91bGRKtlU4pOxTKDmP5R8P_6ZEx-_IXl11KsKbx5qluiuEkQO3dsz_SNw8CasVf7xfKMf1iIL5mP9qg18dabpNvoeS5irykrOohfq4ztq2UM9LbWoTjDCLia9-Er7eywR3bV3cpV0');
-              }, child: Text('Test')),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(

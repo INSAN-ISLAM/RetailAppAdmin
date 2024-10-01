@@ -60,6 +60,7 @@ class _RechargeAcceptScreenState extends State<RechargeAcceptScreen> {
       case 'Pending':
         return Colors.orange;
       case 'Approve':
+
         return Colors.green;
       case 'Reject':
         return Colors.red;
