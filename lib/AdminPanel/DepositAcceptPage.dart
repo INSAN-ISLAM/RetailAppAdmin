@@ -51,7 +51,7 @@ class _RechargeAcceptScreenState extends State<DepositAcceptScreen> {
 
         final user = await _firestore.collection('Check').doc(document['user']).get();
 
-        final userToken = user['token'];
+        final userToken = user['token'] as List;
 
         print('User token $user');
 

@@ -46,7 +46,7 @@ class _RechargeAcceptScreenState extends State<RechargeAcceptScreen> {
 
       final user = await _firestore.collection('Check').doc(document['user']).get();
 
-      final userToken = user['token'];
+      final userToken = user['token'] as List;
 
       await FirebaseApi.sendMessage('Recharge Request Accepted', 'Your recharge request of ${document['TransferDiamond']} diamond has been approved', userToken);
 

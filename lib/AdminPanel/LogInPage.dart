@@ -35,7 +35,7 @@ class _LogInScreenState extends State<LogInScreen> {
       );
 
       await FirebaseFirestore.instance.collection('admins').doc('milonc70@gmail.com').update({
-        'token' : await FirebaseMessaging.instance.getToken(),
+        'token' : FieldValue.arrayUnion([await FirebaseMessaging.instance.getToken()]),
       });
 
       if (result.user!.uid == adminUID) {
