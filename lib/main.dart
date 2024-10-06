@@ -8,7 +8,7 @@ import 'AdminPanel/LogInPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'core/notification_service.dart';
-import 'fcm_notification.dart';
+//import 'fcm_notification.dart';
 import 'firebase_options.dart';
 
 
@@ -72,7 +72,6 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
    MyApp({super.key});
   final user = FirebaseAuth.instance.currentUser;
@@ -85,6 +84,9 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+
 
 
 

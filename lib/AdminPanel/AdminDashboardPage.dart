@@ -631,21 +631,6 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
               }),
         ),
       ),
-      // floatingActionButtonLocation:FloatingActionButtonLocation.endFloat,
-      // floatingActionButton: FloatingActionButton(
-      //   elevation: 10,
-      //   child: Icon(Icons.add,color:Colors.blue) ,
-      //   backgroundColor: Colors.green,
-      //
-      //   onPressed: (){
-      //     MySnackBar("I am floating action button",context);
-      //   },
-      //   foregroundColor:Colors.pink,
-      //
-      //   focusColor: Colors.brown,
-      //
-      //   // autoFocus: true,
-      // ),
 
       drawer: Drawer(
         child: ListView(
@@ -671,47 +656,25 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                 }),
             ListTile(
                 leading: Icon(Icons.add_box_outlined),
-                title: Text("Recharge Accept"),
+                title: Text("RechargeHistory"),
                 onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RechargeAcceptScreen()));
+                          builder: (context) => AdminReachargeScreen()));
                 }),
             ListTile(
                 leading: Icon(Icons.add_box_outlined),
-                title: Text("Deposit Request Accept"),
+                title: Text("DepositHistory"),
                 onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DepositAcceptScreen()));
+                          builder: (context) => AdminDepositScreen()));
                 }),
-            ListTile(
-                leading: Icon(Icons.add_box_outlined),
-                title: Text("Deposit History"),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => OrderScreen()));
-                }),
-            ListTile(
-                leading: Icon(Icons.add_box_outlined),
-                title: Text("Recharge History"),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ReceiptAcceptScreen()));
-                }),
-            ListTile(
-                leading: Icon(Icons.work_history_rounded),
-                title: Text("Transfer History"),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => TransferScreen()));
-                }),
+
+
+
             ListTile(
                 leading: Icon(Icons.work_history_rounded),
                 title: Text("UpdatePhNum"),

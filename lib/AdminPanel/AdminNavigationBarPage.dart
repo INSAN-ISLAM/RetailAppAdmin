@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'AdminDashboardPage.dart';
+import 'DepositAcceptPage.dart';
+import 'RechargeAcceptPage.dart';
 import 'UserListPage.dart';
 
 
@@ -17,8 +19,8 @@ class _AdminMainBottomNavBarState extends State<AdminMainBottomNavBar> {
   int _selectedScreen = 0;
   final List<Widget> _screens =  [
     AdminDashBoardScreen(),
-    AdminDepositScreen(),
-    AdminReachargeScreen(),
+    DepositAcceptScreen(),
+    RechargeAcceptScreen(),
     AdminTransferScreen(),
     SignUpListScreen(),
 
@@ -55,9 +57,9 @@ class _AdminMainBottomNavBarState extends State<AdminMainBottomNavBar> {
           BottomNavigationBarItem(
               icon: Icon(Icons.home), label: 'Dashboard'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.send), label: 'DepositHistory'),
+              icon: Icon(Icons.send), label: 'DepositAccept'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.card_travel_sharp), label: 'RechargeHistory'),
+              icon: Icon(Icons.card_travel_sharp), label: 'RechargeAccept'),
           BottomNavigationBarItem(icon: Icon(Icons.threed_rotation_rounded), label: 'TransferHistory'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'UserList'),
 
